@@ -2,7 +2,7 @@ import React from 'react';
 import gif from '../assets/runningDog.gif';
 
 
-export const LoadingAnimation = () => {
+export const Header = () => {
 	return (
 		<header>
 			<img src={gif} alt="running dog animation" />

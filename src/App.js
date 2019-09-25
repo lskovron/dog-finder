@@ -1,7 +1,7 @@
 import React from 'react';
 import {Map} from './components/Map';
 import {MapForm} from './components/MapForm';
-import {LoadingAnimation} from './components/LoadingAnimation';
+import {Header} from './components/Header';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import './App.css';
 
@@ -45,7 +45,7 @@ export class App extends React.Component {
     return (
       <div className="App">
        
-        <LoadingAnimation />
+        <Header />
         {this.state.dataReady ? 
           [
           <MapForm 

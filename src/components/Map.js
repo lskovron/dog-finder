@@ -1,5 +1,6 @@
 import React from 'react';
 import mapboxgl from 'mapbox-gl';
+import {AccessabilityMarkup} from './AccessabilityMarkup';
 
 export class Map extends React.Component {
 	constructor(props){
@@ -9,7 +10,16 @@ export class Map extends React.Component {
 
 	render(){
 		return (
-			<div id="DogFinderMap"></div>
+			<div>
+				<AccessabilityMarkup
+		        visible={this.props.visible}
+		        dogs={this.props.dogs}
+		        parks={this.props.parks}
+		        markerFocus={this.markerFocus}
+		        markerFocusOut={this.markerFocusOut}
+		        key="2" />
+				<div id="DogFinderMap"></div>
+			</div>
 		)		
 	}
 
@@ -87,6 +97,8 @@ export class Map extends React.Component {
 			this.props.parks.results, //API data - parks
 			"park" //icon
 		);
+
+		console.log(parksLayer);
 		
 
 		this.map.on("load",()=>(
@@ -113,10 +125,28 @@ export class Map extends React.Component {
 		
 	}
 
+	markerFocus = (coord,desc) => {
+		let popup = new mapboxgl.Popup({
+			closeButton: false,
+			offset: 10
+		});
+		popup.setLngLat(coord)
+			.setHTML(desc)
+			.addTo(this.map);
+
+		this.map.flyTo({center: coord});
+	}
+
+	markerFocusOut = () => {
+		console.log('focus out');
+		this.map.fire('click');
+	}
+
 	mapInteraction = () => {
 
 
 		const addPopup = (coord,desc) => {
+			console.log(coord,desc);
 			let popup = new mapboxgl.Popup({
 				closeButton: false,
 				offset: 10
@@ -162,34 +192,41 @@ export class Map extends React.Component {
 		this.map.on('mouseleave', 'parks', () => this.map.getCanvas().style.cursor = '' );
 
 		this.map.on('click', 'dogs', function (e) {
-			let coordinates = e.features[0].geometry.coordinates.slice();
-			let description = e.features[0].properties.description;
-			 
-			// Ensure that if the map is zoomed out such that multiple
-			// copies of the feature are visible, the popup appears
-			// over the copy being pointed to.
-			while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
-				coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+			if(e.lngLat!==undefined){
+				console.log(e.lngLat);
+				let coordinates = e.features[0].geometry.coordinates.slice();
+				let description = e.features[0].properties.description;
+				 
+				// Ensure that if the map is zoomed out such that multiple
+				// copies of the feature are visible, the popup appears
+				// over the copy being pointed to.
+				while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+					coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+				}
+
+				addPopup(coordinates,description);
+
+				findNearest(coordinates);				
 			}
 
-			addPopup(coordinates,description);
-
-			findNearest(coordinates);
 			 
 		});
 
 		this.map.on('click', 'parks', function (e) {
-			let coordinates = e.features[0].geometry.coordinates.slice();
-			let description = e.features[0].properties.description;
-			 
-			// Ensure that if the map is zoomed out such that multiple
-			// copies of the feature are visible, the popup appears
-			// over the copy being pointed to.
-			while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
-				coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+			if(e.lngLat!==undefined){
+				let coordinates = e.features[0].geometry.coordinates.slice();
+				let description = e.features[0].properties.description;
+				 
+				// Ensure that if the map is zoomed out such that multiple
+				// copies of the feature are visible, the popup appears
+				// over the copy being pointed to.
+				while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+					coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+				}
+
+				addPopup(coordinates,description);				
 			}
 
-			addPopup(coordinates,description);
 			 
 		});
 	}

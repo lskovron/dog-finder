@@ -72,11 +72,11 @@ export class App extends React.Component {
       this.setState({
         visible:{'parks':'visible','dogs':'visible'}
       })
-    }else if(selected==='parks'){
+    } else if(selected==='parks'){
       this.setState({
         visible:{'parks':'visible','dogs':'none'}
       })  
-    }else {
+    } else {
       this.setState({
         visible:{'parks':'none','dogs':'visible'}
       })     
